@@ -1,6 +1,6 @@
 // The library needs to be configured with your account's secret key.
 // Ensure the key is kept out of any version control system you might be using.
-const stripe = require("stripe")("sk_test_...");
+const stripe = require("stripe")(process.env.stripeSecretKey);
 const express = require("express");
 const app = express();
 
@@ -46,4 +46,6 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
   response.send();
 });
 
-app.listen(4242, () => console.log("Running on port 4242"));
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
