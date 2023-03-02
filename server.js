@@ -1,11 +1,30 @@
 // The library needs to be configured with your account's secret key.
 // Ensure the key is kept out of any version control system you might be using.
 const stripe = require("stripe")(process.env.stripeSecretKey);
+const fetch = require("node-fetch");
 const express = require("express");
 const app = express();
 
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
+// You can find your endpoint's secret in your webhook settings
 const endpointSecret = process.env.endpointSecret;
+
+// Use body-parser to retrieve the raw body as a buffer
+const bodyParser = require("body-parser");
+
+const sendBubble = async (pi_id, decline_code) => {
+  const body = { pi_id, decline_code };
+
+  await fetch("https://www.nomadikliving.com/api/1.1/wf/stripe-identity-webhook-failure", {
+    method: "post",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.bubblePrivateKey}`,
+    },
+  })
+    .then(res => res.json())
+    .then(json => console.log(json));
+};
 
 // Use JSON parser for all non-webhook routes
 app.use((req, res, next) => {
@@ -34,8 +53,10 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
     case "payment_intent.payment_failed":
       const paymentIntentPaymentFailed = event.data.object;
       console.log("❌ payment_intent.payment_failed");
-      console.log("event.data.object = ", paymentIntentPaymentFailed);
-      // Then define and call a function to handle the event payment_intent.payment_failed
+      console.log(`event.data.object.id = ${paymentIntentPaymentFailed.id}`);
+      console.log(
+        `event.data.object.last_payment_error.decline_code ${paymentIntentPaymentFailed.last_payment_error.decline_code}`
+      );
       break;
     // ... handle other event types
     default:
