@@ -54,7 +54,11 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
   // Handle the event
   switch (event.type) {
     case "payment_intent.payment_failed":
-      console.log(`❌ payment_intent.payment_failed`);
+      const paymentIntentPaymentFailed = event.data.object;
+      const pi_id = paymentIntentPaymentFailed.id;
+      const decline_code = paymentIntentPaymentFailed.last_payment_error.decline_code;
+
+      console.log(`${formattedDate} ${formattedTime} ❌ payment_intent.payment_failed`);
       console.log(`id = ${pi_id}`);
       console.log(`decline_code = ${decline_code}`);
 
