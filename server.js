@@ -54,10 +54,7 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
   // Handle the event
   switch (event.type) {
     case "payment_intent.payment_failed":
-      // console.log current date/time to help with railway/stripe debugging
-      const now = new Date();
-
-      console.log(`${now} ❌ payment_intent.payment_failed`);
+      console.log(`❌ payment_intent.payment_failed`);
       console.log(`id = ${pi_id}`);
       console.log(`decline_code = ${decline_code}`);
 
