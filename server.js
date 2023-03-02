@@ -54,23 +54,10 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
   // Handle the event
   switch (event.type) {
     case "payment_intent.payment_failed":
-      // console.log() current date/time to help with railway/stripe debugging
+      // console.log current date/time to help with railway/stripe debugging
       const now = new Date();
 
-      const formattedDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-
-      const formattedTime = `${hours < 10 ? "0" : ""}${hours}:${
-        minutes < 10 ? "0" : ""
-      }${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-
-      const paymentIntentPaymentFailed = event.data.object;
-      const pi_id = paymentIntentPaymentFailed.id;
-      const decline_code = paymentIntentPaymentFailed.last_payment_error.decline_code;
-
-      console.log(`${formattedDate} ${formattedTime} ❌ payment_intent.payment_failed`);
+      console.log(`${now} ❌ payment_intent.payment_failed`);
       console.log(`id = ${pi_id}`);
       console.log(`decline_code = ${decline_code}`);
 
