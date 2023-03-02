@@ -27,14 +27,14 @@ const sendBubble = async (pi_id, decline_code) => {
 };
 
 // Use JSON parser for all non-webhook routes
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   if (req.originalUrl === "/pi-webhook") {
     next();
   } else {
     console.log(`not sent to /pi-webhook. Sent to ${req.originalUrl}`);
     bodyParser.json()(req, res, next);
   }
-});
+}); */
 
 app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, response) => {
   const sig = request.headers["stripe-signature"];
@@ -52,11 +52,14 @@ app.post("/pi-webhook", express.raw({ type: "application/json" }), (request, res
   switch (event.type) {
     case "payment_intent.payment_failed":
       const paymentIntentPaymentFailed = event.data.object;
+      const pi_id = paymentIntentPaymentFailed.id;
+      const decline_code = paymentIntentPaymentFailed.last_payment_error.decline_code;
+
       console.log("❌ payment_intent.payment_failed");
-      console.log(`event.data.object.id = ${paymentIntentPaymentFailed.id}`);
-      console.log(
-        `event.data.object.last_payment_error.decline_code ${paymentIntentPaymentFailed.last_payment_error.decline_code}`
-      );
+      console.log(`id = ${pi_id}`);
+      console.log(`decline_code = ${decline_code}`);
+
+      sendBubble(pi_id, decline_code);
       break;
     // ... handle other event types
     default:
