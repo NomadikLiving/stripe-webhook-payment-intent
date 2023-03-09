@@ -14,17 +14,14 @@ const bodyParser = require("body-parser");
 const sendBubble = async (pi_id, decline_code) => {
   const body = { pi_id, decline_code };
 
-  await fetch(
-    "https://www.nomadikliving.com/version-test/api/1.1/wf/stripe-pi-failure-webhook",
-    {
-      method: "post",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.bubblePrivateKey}`,
-      },
-    }
-  )
+  await fetch(process.env.bubbleURL, {
+    method: "post",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.bubblePrivateKey}`,
+    },
+  })
     .then(res => res.json())
     .then(json => console.log(json));
 };
